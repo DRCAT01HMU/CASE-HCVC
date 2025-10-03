@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Case Lâm Sàng - Hội Chứng Vành Cấp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #eaf5ff; /* A lighter, softer blue */
+        }
+
+        .glassmorphism-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+        }
+
+        .case-card {
+            animation: fadeIn 0.6s ease-out forwards;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 90, 156, 0.1);
+        }
+
+        .explanation {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.7s ease-in-out;
+            padding: 0 1.5rem;
+            border-left: 3px solid transparent;
+        }
+
+        .explanation.show {
+            max-height: 500px;
+            opacity: 1;
+            padding: 1rem 1.5rem;
+        }
+
+        .option-label {
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .option-label .icon-container {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+
+        .option-label.correct, .option-label.incorrect {
+            padding-left: 1rem; /* Adjust padding when icon is shown */
+        }
+
+        .option-label.correct .icon-container, .option-label.incorrect .icon-container {
+            transform: translateY(-50%) scale(1);
+            opacity: 1;
+        }
+
+        .option-label.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .option-label.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .nav-button.active {
+            background-color: #005A9C;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 90, 156, 0.3);
+        }
+
+        .ecg-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-ecg 3s linear forwards;
+        }
+
+        @keyframes draw-ecg {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .watermark {
+            position: fixed;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%) rotate(-30deg);
+            font-size: clamp(3rem, 15vw, 10rem);
+            color: rgba(0, 90, 156, 0.04);
+            font-weight: 800;
+            pointer-events: none;
+            z-index: 1;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800">
+    
+    <div class="watermark">TEAMDRCAT</div>
+
+    <!-- Header Section -->
+    <header class="glassmorphism-header sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg class="w-10 h-10 text-[#0077C8]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 12H8L9.5 7L12.5 17L14.5 9L16 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ecg-line" />
+                    <path d="M3 12H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                     <path d="M20 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Trắc Nghiệm <span class="text-[#0077C8]">Hội Chứng Vành Cấp</span></h1>
+            </div>
+            <button id="reset-btn" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                Làm Lại
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="py-4">
+        <div id="case-navigation" class="container mx-auto px-4 flex justify-center space-x-2 md:space-x-4 flex-wrap">
+            <!-- Navigation buttons will be inserted here by JavaScript -->
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="quiz-container" class="container mx-auto px-4 pb-12">
+        <!-- Case content will be inserted here by JavaScript -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 px-4">
+        <p class="text-sm text-gray-600 font-bold">Dữ liệu được biên soạn và tổng hợp bởi TEAMDRCAT dựa trên kiến thức chuẩn Y Hà Nội và các Hướng dẫn Y Khoa cập nhật</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data for the quiz
+            const quizData = [
+                {
+                    caseId: 1,
+                    title: "Case 1",
+                    scenario: `Một người đàn ông 62 tuổi, có tiền sử tăng huyết áp và đái tháo đường type 2, được đưa đến phòng cấp cứu vì đau ngực dữ dội sau xương ức lan lên vai trái. Cơn đau xuất hiện đột ngột cách đây 2 giờ khi ông đang làm vườn, cảm giác như "bị đè ép", kèm theo vã mồ hôi và khó thở. Bệnh nhân đang dùng lisinopril và metformin. Khám lâm sàng: bệnh nhân tỉnh, lo lắng, nhịp tim 105 ck/ph, huyết áp 150/95 mmHg, SpO2 96% khí trời, nghe phổi có ít ran ẩm ở hai đáy. ECG ghi nhận ST chênh lên 3 mm ở các chuyển đạo V2-V5.`,
+                    questions: [
+                        {
+                            question: "Chẩn đoán phù hợp nhất cho bệnh nhân này là gì?",
+                            options: ["Thuyên tắc phổi cấp", "Nhồi máu cơ tim cấp có ST chênh lên thành trước rộng", "Viêm màng ngoài tim cấp", "Bóc tách động mạch chủ ngực"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Bệnh nhân có cơn đau ngực điển hình của thiếu máu cơ tim (đau sau xương ức, cảm giác đè ép, lan vai trái), kèm các triệu chứng thần kinh thực vật (vã mồ hôi) và ECG có ST chênh lên ở các chuyển đạo trước tim (V2-V5), đây là hình ảnh kinh điển của nhồi máu cơ tim cấp thành trước.`
+                        },
+                        {
+                            question: "Bước xử trí cấp cứu ưu tiên hàng đầu và có ý nghĩa cải thiện tiên lượng nhất cho bệnh nhân này là gì?",
+                            options: ["Dùng Morphin tĩnh mạch để giảm đau", "Tái tưới máu mạch vành bằng can thiệp động mạch vành qua da (PCI) thì đầu", "Dùng thuốc lợi tiểu Furosemide để điều trị ran ẩm ở phổi", "Dùng thuốc chẹn beta giao cảm đường uống để giảm nhịp tim"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Đối với STEMI, mục tiêu chính là tái thông động mạch vành bị tắc càng sớm càng tốt để cứu vãn cơ tim. Can thiệp ĐMV thì đầu (Primary PCI) là phương pháp ưu tiên nếu có thể thực hiện trong vòng 90-120 phút kể từ khi tiếp cận y tế ban đầu, vì đã chứng minh giảm tử vong và tái nhồi máu hiệu quả hơn tiêu sợi huyết.`
+                        },
+                        {
+                            question: `Bệnh viện nơi bệnh nhân nhập viện có khả năng thực hiện PCI. Theo hướng dẫn của ESC, mục tiêu "door-to-balloon time" lý tưởng là bao nhiêu?`,
+                            options: ["< 30 phút", "< 60 phút", "< 90 phút", "< 120 phút"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Các hướng dẫn hiện hành của ESC khuyến cáo mục tiêu "door-to-balloon time" cho can thiệp ĐMV thì đầu ở bệnh nhân STEMI là dưới 90 phút tại một trung tâm có khả năng PCI. Mục tiêu này có thể được rút ngắn xuống < 60 phút ở những bệnh nhân đến sớm hoặc có nguy cơ cao.`
+                        },
+                        {
+                            question: "Trong lúc chờ đợi can thiệp, phác đồ thuốc kháng kết tập tiểu cầu kép (DAPT) nào sau đây là phù hợp nhất để dùng liều nạp cho bệnh nhân?",
+                            options: ["Aspirin 100 mg và Clopidogrel 75 mg", "Aspirin 300 mg và Ticagrelor 180 mg", "Clopidogrel 300 mg và Prasugrel 60 mg", "Ticagrelor 90 mg và Prasugrel 10 mg"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Bệnh nhân STEMI dự kiến can thiệp PCI thì đầu cần được dùng liều nạp DAPT ngay lập tức. Phác đồ ưu tiên bao gồm Aspirin liều nạp (150-300 mg uống) và một thuốc ức chế thụ thể P2Y12 mạnh như Ticagrelor (liều nạp 180 mg) hoặc Prasugrel. Ticagrelor được ưu tiên hơn Clopidogrel do hiệu quả mạnh và khởi phát tác dụng nhanh hơn.`
+                        },
+                    ]
+                },
+                {
+                    caseId: 2,
+                    title: "Case 2",
+                    scenario: `Một phụ nữ 76 tuổi, tiền sử đái tháo đường và bệnh thận mạn giai đoạn 3 (eGFR 45 mL/phút), đến phòng khám vì cảm thấy mệt mỏi bất thường và khó thở khi gắng sức nhẹ trong 3 ngày qua. Bà phủ nhận đau ngực điển hình, chỉ mô tả cảm giác "nặng và khó chịu" ở vùng thượng vị. Khám lâm sàng: nhịp tim 90 ck/ph, huyết áp 140/85 mmHg, phổi trong. ECG lúc vào viện cho thấy ST chênh xuống 1 mm ở DII, DIII, aVF và T âm ở V4-V6. Xét nghiệm Troponin T độ nhạy cao (hs-cTnT) lần đầu là 85 ng/L (ngưỡng trên của giới hạn bình thường < 14 ng/L).`,
+                    questions: [
+                         {
+                            question: "Chẩn đoán nào sau đây là phù hợp nhất?",
+                            options: ["Đau thắt ngực không ổn định", "Nhồi máu cơ tim cấp không ST chênh lên (NSTEMI)", "Cơn đau thắt ngực ổn định", "Viêm dạ dày cấp"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Bệnh nhân có các triệu chứng tương đương đau thắt ngực (khó thở, mệt, khó chịu thượng vị - một biểu hiện không điển hình ở phụ nữ, người già và bệnh nhân đái tháo đường), kèm theo thay đổi ST-T trên ECG và quan trọng nhất là nồng độ hs-cTnT tăng cao trên ngưỡng bình thường. Sự kết hợp này xác định chẩn đoán NSTEMI.`
+                        },
+                        {
+                            question: "Dựa trên thang điểm GRACE, bệnh nhân này được xếp vào nhóm nguy cơ nào và chiến lược can thiệp phù hợp là gì? (Giả định điểm GRACE tính được là 155)",
+                            options: ["Nguy cơ thấp, điều trị nội khoa bảo tồn", "Nguy cơ trung bình, chụp ĐMV trong vòng 72 giờ", "Nguy cơ cao, cần chụp ĐMV sớm trong vòng 24 giờ", "Nguy cơ rất cao, cần chụp ĐMV ngay lập tức (< 2 giờ)"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Điểm GRACE > 140 được xếp vào nhóm nguy cơ cao. Theo hướng dẫn của ESC, những bệnh nhân NSTEMI nguy cơ cao nên được tiến hành chụp và can thiệp ĐMV sớm, trong vòng 24 giờ kể từ khi nhập viện, để cải thiện kết cục.`
+                        },
+                        {
+                            question: "Loại thuốc kháng đông nào sau đây được ưu tiên sử dụng cho bệnh nhân này trong giai đoạn cấp?",
+                            options: ["Heparin không phân đoạn (UFH)", "Enoxaparin (LMWH)", "Fondaparinux", "Bivalirudin"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Ở bệnh nhân NSTE-ACS được xử trí theo chiến lược xâm lấn sớm và có nguy cơ chảy máu không quá cao, Fondaparinux được ưu tiên hơn UFH hoặc Enoxaparin vì nó làm giảm nguy cơ chảy máu nặng mà không làm tăng các biến cố thiếu máu cục bộ.`
+                        },
+                        {
+                            question: `Sau khi can thiệp đặt stent phủ thuốc thành công, bệnh nhân hỏi: "Tôi có cần dùng thuốc bảo vệ dạ dày không?". Câu trả lời nào sau đây là phù hợp nhất?`,
+                            options: ["Không cần thiết, vì các thuốc này hiếm khi gây vấn đề dạ dày.", "Có, bà nên dùng một thuốc ức chế bơm proton (PPI) vì bà có nguy cơ chảy máu tiêu hóa cao.", "Chỉ cần dùng nếu bà bắt đầu có triệu chứng đau dạ dày.", "Bà nên dùng một thuốc kháng H2 như Ranitidine thay vì PPI."],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Bệnh nhân này có nhiều yếu tố nguy cơ cao gây chảy máu tiêu hóa khi dùng DAPT (tuổi > 65, bệnh thận mạn). Các hướng dẫn khuyến cáo sử dụng đồng thời một thuốc PPI cho những bệnh nhân có nguy cơ cao để dự phòng xuất huyết tiêu hóa.`
+                        },
+                    ]
+                },
+                {
+                    caseId: 3,
+                    title: "Case 3",
+                    scenario: `Một người đàn ông 70 tuổi được đưa đến bệnh viện 4 ngày sau khi bị nhồi máu cơ tim cấp thành trước rộng và đã được can thiệp đặt stent phủ thuốc vào động mạch liên thất trước (LAD). Hiện tại, ông đột ngột trở nên khó thở dữ dội, tụt huyết áp xuống 80/60 mmHg. Khám lâm sàng: bệnh nhân tỉnh nhưng mệt, vã mồ hôi, tĩnh mạch cổ nổi. Nghe tim có tiếng thổi tâm thu toàn thì thô ráp, mạnh (độ 4/6) nghe rõ nhất ở bờ trái xương ức, kèm theo rung miu. Nghe phổi có nhiều ran ẩm lan tỏa hai bên.`,
+                    questions: [
+                        {
+                            question: "Biến chứng cơ học nào có khả năng xảy ra nhất?",
+                            options: ["Vỡ thành tự do thất trái", "Hở van hai lá cấp do đứt cơ nhú", "Thủng vách liên thất", "Giả phình thất trái"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Sự xuất hiện đột ngột của suy tim cấp/sốc tim vài ngày sau NMCT, kèm theo tiếng thổi tâm thu toàn thì mới, thô ráp, nghe rõ nhất ở bờ trái xương ức và có rung miu là những dấu hiệu kinh điển của thủng vách liên thất.`
+                        },
+                        {
+                            question: "Thăm dò chẩn đoán hình ảnh nào cần được thực hiện ngay tại giường để xác định chẩn đoán và hướng dẫn xử trí?",
+                            options: ["Chụp X-quang ngực", "Siêu âm tim qua thành ngực (TTE)", "Chụp cắt lớp vi tính lồng ngực có cản quang (CTA)", "Thông tim phải"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Siêu âm tim tại giường là phương pháp nhanh chóng, không xâm lấn và hiệu quả nhất để xác định các biến chứng cơ học của NMCT. Nó có thể hình ảnh hóa trực tiếp lỗ thủng trên vách liên thất và sử dụng Doppler màu để xác nhận dòng shunt.`
+                        },
+                        {
+                            question: "Trong lúc chờ đợi can thiệp phẫu thuật, biện pháp nào sau đây giúp ổn định huyết động cho bệnh nhân tốt nhất?",
+                            options: ["Dùng thuốc chẹn beta giao cảm liều cao để giảm hậu gánh", "Truyền dịch nhanh để tăng tiền gánh", "Đặt bóng đối xung động mạch chủ (Intra-aortic balloon pump - IABP)", "Dùng thuốc lợi tiểu liều cao để giảm phù phổi"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Bệnh nhân đang trong tình trạng sốc tim. IABP là một thiết bị hỗ trợ tuần hoàn cơ học giúp giảm hậu gánh (giảm lượng máu shunt) và tăng tưới máu mạch vành, là cầu nối quan trọng trong thời gian chờ phẫu thuật.`
+                        },
+                        {
+                            question: "Phương pháp điều trị dứt điểm cho tình trạng này là gì?",
+                            options: ["Can thiệp đóng lỗ thông qua da bằng dụng cụ", "Phẫu thuật vá lỗ thủng vách liên thất cấp cứu", "Dùng thuốc ức chế men chuyển và lợi tiểu liều cao", "Ghép tim khẩn cấp"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Điều trị dứt điểm và duy nhất cho thủng vách liên thất sau nhồi máu gây sốc tim là phẫu thuật tim hở cấp cứu để vá lại lỗ thủng. Việc trì hoãn phẫu thuật có tỷ lệ tử vong rất cao.`
+                        }
+                    ]
+                },
+                {
+                    caseId: 4,
+                    title: "Case 4",
+                    scenario: `Một người đàn ông 45 tuổi, đang điều trị tăng huyết áp bằng amlodipine, gọi cấp cứu vì đau ngực dữ dội, cảm giác "như bị xé toạc", lan thẳng ra sau lưng giữa hai bả vai. Cơn đau khởi phát đột ngột cách đây 30 phút. Tại phòng cấp cứu, huyết áp tay phải là 180/100 mmHg, tay trái là 145/85 mmHg. Nghe tim có tiếng thổi tâm trương nhẹ ở bờ phải xương ức. ECG cho thấy ST chênh lên 1 mm ở các chuyển đạo II, III, aVF.`,
+                    questions: [
+                        {
+                            question: "Dựa trên bệnh sử và khám lâm sàng, chẩn đoán nào cần được nghĩ đến và loại trừ khẩn cấp nhất, mặc dù có ST chênh lên trên ECG?",
+                            options: ["Nhồi máu cơ tim cấp thành dưới đơn thuần", "Co thắt động mạch vành", "Thuyên tắc phổi cấp", "Bóc tách động mạch chủ cấp"],
+                            correctAnswer: 3,
+                            explanation: `<strong>Đáp án đúng: D.</strong> Mặc dù ECG gợi ý STEMI, các đặc điểm lâm sàng (đau như 'xé' lan ra sau lưng, huyết áp hai tay chênh lệch, thổi hở chủ mới) là rất điển hình cho bóc tách động mạch chủ cấp. Đây là một chẩn đoán phân biệt không thể bỏ sót.`
+                        },
+                        {
+                            question: "Thăm dò chẩn đoán hình ảnh nào là lựa chọn tốt nhất để xác định chẩn đoán nghi ngờ ở bệnh nhân này?",
+                            options: ["Siêu âm tim qua thực quản (TEE)", "Chụp cắt lớp vi tính lồng ngực có tiêm thuốc cản quang", "Chụp động mạch vành xâm lấn", "Chụp cộng hưởng từ tim"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Chụp CTA ngực là phương pháp nhanh chóng, sẵn có và có độ nhạy cũng như độ đặc hiệu rất cao để chẩn đoán bóc tách động mạch chủ, cho phép xác định vị trí và mức độ lan rộng của tổn thương.`
+                        },
+                        {
+                            question: "Nếu chẩn đoán bóc tách động mạch chủ được xác nhận, việc sử dụng thuốc tiêu sợi huyết (thrombolysis) sẽ dẫn đến hậu quả gì?",
+                            options: ["Làm tan cục máu đông trong lòng giả và cải thiện triệu chứng", "Không có tác dụng gì vì không có huyết khối", "Gây tử vong do xuất huyết không kiểm soát vào khoang màng ngoài tim hoặc màng phổi", "Giảm nguy cơ nhồi máu cơ tim thứ phát"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Bóc tách động mạch chủ là một CHỐNG CHỈ ĐỊNH TUYỆT ĐỐI của liệu pháp tiêu sợi huyết. Việc sử dụng thuốc sẽ gây xuất huyết ồ ạt vào các khoang cơ thể và gần như chắc chắn gây tử vong. Đây là lý do tại sao việc phân biệt STEMI với bóc tách ĐMC là cực kỳ quan trọng.`
+                        },
+                        {
+                            question: "Điều trị ban đầu cho bệnh nhân này trong lúc chờ đợi xác định chẩn đoán và hội chẩn ngoại khoa bao gồm việc kiểm soát tích cực hai yếu tố nào?",
+                            options: ["Đường huyết và nhiệt độ", "Tần số tim và huyết áp", "Nồng độ kali và magiê", "Tình trạng đông máu và số lượng tiểu cầu"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Mục tiêu điều trị nội khoa cấp cứu cho bóc tách động mạch chủ là làm giảm 'lực xé' lên thành động mạch chủ bằng cách kiểm soát chặt chẽ cả tần số tim (mục tiêu ~60 ck/ph) và huyết áp (mục tiêu HA tâm thu 100-120 mmHg).`
+                        }
+                    ]
+                },
+                {
+                    caseId: 5,
+                    title: "Case 5",
+                    scenario: `Một phụ nữ 45 tuổi, tiền mãn kinh, có tiền sử đau nửa đầu Migraine, đến phòng cấp cứu lúc 4 giờ sáng vì đau ngực dữ dội sau xương ức. Cơn đau đánh thức bà dậy từ giấc ngủ và kéo dài khoảng 15 phút. Bà không có các yếu tố nguy cơ tim mạch truyền thống. ECG tại phòng cấp cứu cho thấy ST chênh lên 4mm ở các chuyển đạo II, III, aVF. Tuy nhiên, trên đường đến phòng can thiệp, cơn đau ngực của bà đột ngột biến mất hoàn toàn và ECG lặp lại cho thấy đoạn ST đã trở về đường đẳng điện. Chụp động mạch vành sau đó cho thấy hệ động mạch vành hoàn toàn bình thường.`,
+                     questions: [
+                        {
+                            question: "Hiện tượng lâm sàng này phù hợp nhất với chẩn đoán nào?",
+                            options: ["Nhồi máu cơ tim với tái thông tự phát", "Đau thắt ngực do co thắt mạch vành", "Hội chứng tim tan vỡ", "Thuyên tắc động mạch vành từ nguồn không xác định"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Đau thắt ngực Prinzmetal (do co thắt mạch vành) được đặc trưng bởi các cơn đau ngực lúc nghỉ gây ra bởi sự co thắt tạm thời của động mạch vành, dẫn đến ST chênh lên thoáng qua. Khi cơn co thắt qua đi, triệu chứng và ECG trở về bình thường. Chụp mạch vành thường không thấy tổn thương.`
+                        },
+                        {
+                            question: "Yếu tố nào trong tiền sử của bệnh nhân này là một yếu tố nguy cơ đã biết của đau thắt ngực do co thắt mạch vành?",
+                            options: ["Giới tính nữ", "Tuổi 45", "Tiền sử đau nửa đầu Migraine", "Không có yếu tố nào"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Đau thắt ngực do co thắt mạch vành có liên quan đến các tình trạng co thắt mạch máu khác như đau nửa đầu Migraine và hiện tượng Raynaud. Sự hiện diện của các tình trạng này làm tăng nghi ngờ lâm sàng.`
+                        },
+                        {
+                            question: "Loại thuốc nào là nền tảng trong điều trị lâu dài cho bệnh nhân này?",
+                            options: ["Thuốc chẹn beta giao cảm (Beta-blockers)", "Thuốc chẹn kênh canxi", "Aspirin liều thấp", "Thuốc ức chế men chuyển (ACE inhibitors)"],
+                            correctAnswer: 1,
+                            explanation: `<strong>Đáp án đúng: B.</strong> Thuốc chẹn kênh canxi (như Nifedipine, Diltiazem) và Nitrates tác dụng kéo dài là hai nhóm thuốc chính, có tác dụng trực tiếp làm giãn động mạch vành và ngăn ngừa các cơn co thắt trong tương lai.`
+                        },
+                        {
+                            question: "Bệnh nhân nên được tư vấn tránh yếu tố nào sau đây để ngăn ngừa các cơn đau trong tương lai?",
+                            options: ["Hoạt động thể chất gắng sức", "Ăn mặn", "Hút thuốc lá và sử dụng cocaine", "Uống cà phê"],
+                            correctAnswer: 2,
+                            explanation: `<strong>Đáp án đúng: C.</strong> Hút thuốc lá là một yếu tố nguy cơ và kích hoạt cơn co thắt mạch vành rất mạnh. Tương tự, các chất cường giao cảm như cocaine cũng là một nguyên nhân phổ biến. Việc ngưng hoàn toàn hút thuốc và tránh các chất kích thích là cực kỳ quan trọng.`
+                        }
+                    ]
+                }
+            ];
+
+            const quizContainer = document.getElementById('quiz-container');
+            const navContainer = document.getElementById('case-navigation');
+            const resetButton = document.getElementById('reset-btn');
+
+            function initializeQuiz() {
+                quizContainer.innerHTML = '';
+                navContainer.innerHTML = '';
+
+                quizData.forEach((caseData, index) => {
+                    // Create Nav Button
+                    const navButton = document.createElement('button');
+                    navButton.className = 'nav-button mb-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-white rounded-full shadow-md hover:bg-[#0077C8] hover:text-white transition-all duration-300';
+                    navButton.textContent = `Case ${caseData.caseId}`;
+                    navButton.dataset.caseIndex = index;
+                    if (index === 0) navButton.classList.add('active');
+                    navContainer.appendChild(navButton);
+                    
+                    // Create Case Card
+                    const caseElement = document.createElement('div');
+                    caseElement.id = `case-${index}`;
+                    caseElement.className = 'case-card bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 border-t-4 border-[#0077C8]';
+                    if (index !== 0) caseElement.style.display = 'none';
+
+                    let questionsHtml = '';
+                    caseData.questions.forEach((q, qIndex) => {
+                        let optionsHtml = '';
+                        q.options.forEach((option, oIndex) => {
+                            optionsHtml += `
+                                <div>
+                                    <label class="option-label block w-full p-4 mb-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-[#0077C8] hover:bg-blue-50">
+                                        <div class="icon-container"></div>
+                                        <input type="radio" name="q-${index}-${qIndex}" value="${oIndex}" class="hidden">
+                                        <span class="font-medium">${String.fromCharCode(65 + oIndex)}. ${option}</span>
+                                    </label>
+                                </div>`;
+                        });
+
+                        questionsHtml += `
+                            <div class="mb-8 question-block">
+                                <p class="font-semibold text-lg mb-4 text-gray-900">${qIndex + 1}. ${q.question}</p>
+                                <div class="options-container space-y-2">${optionsHtml}</div>
+                                <div class="explanation mt-4 rounded-lg bg-gray-50 text-gray-700">${q.explanation}</div>
+                            </div>`;
+                    });
+
+                    caseElement.innerHTML = `
+                        <div class="flex items-center space-x-4 mb-6">
+                             <div class="flex-shrink-0 bg-gradient-to-br from-[#0077C8] to-[#005A9C] text-white rounded-full h-12 w-12 flex items-center justify-center shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-bold text-gray-800">${caseData.title}</h2>
+                            </div>
+                        </div>
+                        <p class="text-base leading-relaxed bg-blue-50/70 p-4 rounded-lg border-l-4 border-blue-300 text-gray-700 mb-8">${caseData.scenario}</p>
+                        <div class="questions-wrapper">${questionsHtml}</div>
+                        <button class="submit-case-btn mt-4 w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105" data-case-index="${index}">Nộp Bài</button>
+                    `;
+                    quizContainer.appendChild(caseElement);
+                });
+
+                addEventListeners();
+            }
+
+            function addEventListeners() {
+                // Submit button click
+                quizContainer.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('submit-case-btn')) {
+                        const caseIndex = e.target.dataset.caseIndex;
+                        const caseElement = document.getElementById(`case-${caseIndex}`);
+                        const questionBlocks = caseElement.querySelectorAll('.question-block');
+
+                        questionBlocks.forEach((questionBlock, qIndex) => {
+                            const optionsContainer = questionBlock.querySelector('.options-container');
+                            const selectedRadio = optionsContainer.querySelector(`input[name="q-${caseIndex}-${qIndex}"]:checked`);
+                            const selectedAnswer = selectedRadio ? parseInt(selectedRadio.value) : -1;
+                            const correctAnswer = quizData[caseIndex].questions[qIndex].correctAnswer;
+                            
+                            const explanationEl = questionBlock.querySelector('.explanation');
+                            explanationEl.classList.add('show');
+
+                            const labels = optionsContainer.querySelectorAll('.option-label');
+                            labels.forEach((label, index) => {
+                                label.querySelector('input').disabled = true;
+                                const iconContainer = label.querySelector('.icon-container');
+
+                                if (index === correctAnswer) {
+                                    label.classList.add('correct');
+                                    iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`;
+                                }
+                                
+                                if (index === selectedAnswer && selectedAnswer !== correctAnswer) {
+                                    label.classList.add('incorrect');
+                                    iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>`;
+                                }
+                            });
+                             
+                            if(selectedAnswer === correctAnswer) {
+                                explanationEl.style.borderLeftColor = '#10b981';
+                            } else if (selectedAnswer !== -1) {
+                                explanationEl.style.borderLeftColor = '#ef4444';
+                            } else {
+                                explanationEl.style.borderLeftColor = '#6b7280';
+                            }
+                        });
+
+                        e.target.disabled = true;
+                        e.target.textContent = 'Đã Nộp';
+                        e.target.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-blue-600', 'hover:from-cyan-600', 'hover:to-blue-700', 'hover:scale-105');
+                        e.target.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    }
+                });
+
+
+                // Navigation
+                navContainer.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        const caseIndex = e.target.dataset.caseIndex;
+
+                        navContainer.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+
+                        quizContainer.querySelectorAll('.case-card').forEach((card, index) => {
+                            card.style.display = (index.toString() === caseIndex) ? 'block' : 'none';
+                        });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+
+                // Reset button
+                resetButton.addEventListener('click', function() {
+                    initializeQuiz();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            initializeQuiz();
+        });
+    </script>
+</body>
+
+</html>
+
+
